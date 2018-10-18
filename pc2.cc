@@ -109,9 +109,9 @@ void run_producer() {
     }
 }
 
-void run_consumer(int* num_consumer) {
+void run_consumer(int num_consumer) {
     int num_ops = 0;
-    for (int i = 0; i < NUM_ITER / (*num_consumer); i++) {
+    for (int i = 0; i < NUM_ITER / num_consumer; i++) {
         if ((i+1)%100000 == 0) {
             std::cout << "consumer iteration: " << i + 1 << "\n";
         }
@@ -134,7 +134,7 @@ int main( int argc, const char* argv[] ) {
     thrs[0] = std::thread(run_producer);
 
     for (int i = 1; i < num_thread; ++i) {
-        thrs[i] = std::thread(run_consumer, &num_consumer);
+        thrs[i] = std::thread(run_consumer, num_consumer);
     }
 
     thrs[0].join();
