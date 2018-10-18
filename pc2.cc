@@ -81,8 +81,8 @@ int consume()
     default: {
         global_mutex_s.lock();
         auto res = s.find(t.item);
-        global_mutex_s.unlock();
 	num_ops += (res != s.end());
+        global_mutex_s.unlock();
 	break;
     }
     }
