@@ -88,8 +88,8 @@ int consume()
     default: {
         global_mutex_s.lock();
         auto res = s.find(t.item);
-        global_mutex_s.unlock();
 	num_ops += (res != s.end());
+	global_mutex_s.unlock();
 	break;
     }
     }
@@ -117,9 +117,9 @@ void run_producer(int mili_second) {
     }
 }
 
-void run_consumer(int* num_consumer) {
+void run_consumer(int num_consumer) {
     int num_ops = 0;
-    for (int i = 0; i < NUM_ITER / (*num_consumer); i++) {
+    for (int i = 0; i < NUM_ITER / num_consumer; i++) {
         if ((i+1)%100000 == 0) {
             std::cout << "consumer iteration: " << i + 1 << "\n";
         }
@@ -143,7 +143,7 @@ int main( int argc, const char* argv[] ) {
     thrs[0] = std::thread(run_producer, sleep_mili_second);
 
     for (int i = 1; i < num_thread; ++i) {
-        thrs[i] = std::thread(run_consumer, &num_consumer);
+        thrs[i] = std::thread(run_consumer, num_consumer);
     }
 
     thrs[0].join();
