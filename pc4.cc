@@ -98,7 +98,7 @@ int consume(int sets)
     default: {
         set_lock_vec[index].lock();
         auto res = set_vec[index].find(t.item);
-	num_ops += (res != sec_vec[index].end());
+	num_ops += (res != set_vec[index].end());
         set_lock_vec[index].unlock();
 	break;
     }

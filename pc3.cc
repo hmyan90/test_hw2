@@ -124,8 +124,8 @@ void init()
 
 void run_producer(int mili_second) {
     unsigned int seed  = 0;
-    for (int i = 0; i < NUM_ITER; i++) {
-        if ((i+1)%100000 == 0) {
+    for (int i = 0; i < NUM_ITER/100; i++) {
+        if ((i+1)%10000 == 0) {
             std::cout << "producer iteration: " << i + 1 << "\n";
         }
         produce(&seed);
@@ -136,7 +136,7 @@ void run_producer(int mili_second) {
 void run_consumer(int num_consumer) {
     int num_ops = 0;
     for (int i = 0; i < NUM_ITER / num_consumer; i++) {
-        if ((i+1)%100000 == 0) {
+        if ((i+1)%10000 == 0) {
             std::cout << "consumer iteration: " << i + 1 << "\n";
         }
         num_ops += consume();
