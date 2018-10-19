@@ -48,18 +48,33 @@ void produce(unsigned int *seed)
     
     t.item = rand_r(seed) % NUM_ITEM;
 
-    while (q.size() > 100) {}
+    bool flag = true;
     global_mutex_q.lock();
+    while (flag == true) {
+        if (q.size() <= 100) {
+	    flag = false;
+	} else {
+	    global_mutex_q.unlock();
+	}
+    }
     q.push(t);
     global_mutex_q.unlock();
 }
 
 int consume()
 {
-    while (q.empty()) {}
-
     int num_ops = 0;
+	
+    bool flag = true;
     global_mutex_q.lock();
+    while (flag == true) {
+        if (q.empty()) {
+	    flag = false;
+	} else {
+	    global_mutex_q.unlock();
+	}
+    }
+
     task t = q.front();
     q.pop();
     global_mutex_q.unlock();
