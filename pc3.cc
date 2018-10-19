@@ -53,8 +53,16 @@ void produce(unsigned int *seed)
         task_batch[i] = t;
     }
 
-    while (q.size() > 100) {}
+    bool flag = true;
     global_mutex_q.lock();
+    while (flag == true) {
+        if (q.size() <= 100) {
+	    flag = false;
+	} else {
+	    global_mutex_q.unlock();
+	}
+    }	
+
     for (int i = 0; i < 100; ++i) {
         q.push(task_batch[i]);
     }
@@ -63,10 +71,18 @@ void produce(unsigned int *seed)
 
 int consume()
 {
-    while (q.empty()) {}
-
     int num_ops = 0;
+	
+    bool flag = true;
     global_mutex_q.lock();
+    while (flag == true) {
+        if (q.empty()) {
+	    flag = false;
+	} else {
+	    global_mutex_q.unlock();
+	}
+    }
+
     task t = q.front();
     q.pop();
     global_mutex_q.unlock();
