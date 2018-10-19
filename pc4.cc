@@ -12,6 +12,7 @@
 #define LOOKUP_RATIO 10
 #define NUM_ITEM 1000000
 #define NUM_ITER 10000000
+#define MAX_CUSOMER 32
 
 enum {
     INSERT,
@@ -26,8 +27,8 @@ struct task {
 
 std::queue<task> q;
 std::mutex global_mutex_q;
-std::vector<std::set<int>>* set_vec;
-std::vector<std::mutex>* set_lock_vec;
+std::vector<std::set<int>> set_vec(4*MAX_CUSOMER);
+std::vector<std::mutex> set_lock_vec(4*MAX_CUSOMER);
 
 void produce(unsigned int *seed)
 {
@@ -48,18 +49,33 @@ void produce(unsigned int *seed)
     
     t.item = rand_r(seed) % NUM_ITEM;
 
-    while (q.size() > 100) {}
-    global_mutex_q.lock();
+    bool flag = true;
+    while (flag == true) {
+        global_mutex_q.lock();
+        if (q.size() <= 100) {
+	    flag = false;
+	} else {
+	    global_mutex_q.unlock();
+	}
+    }
     q.push(t);
     global_mutex_q.unlock();
 }
 
 int consume(int sets)
 {
-    while (q.empty()) {}
-
     int num_ops = 0;
-    global_mutex_q.lock();
+	
+    bool flag = true;
+    while (flag == true) {
+        global_mutex_q.lock();
+        if (!q.empty()) {
+	    flag = false;
+	} else {
+	    global_mutex_q.unlock();
+	}
+    }
+
     task t = q.front();
     q.pop();
     global_mutex_q.unlock();
@@ -129,8 +145,6 @@ int main( int argc, const char* argv[] ) {
     int sets = 4*num_consumer;
     unsigned int seed  = 0;
 
-    //set_vector = ; # TODO
-    //set_lock_vector = ;
     init(sets);
 
     int num_thread = num_consumer + 1;
